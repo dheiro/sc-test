@@ -29,7 +29,7 @@ const getUserIdByToken = async (token) => {
       return refreshToken.user;
     }
   } catch (err) {
-    console.log(err);
+    throw err;
   }
   return null;
 };
@@ -37,13 +37,13 @@ const getUserIdByToken = async (token) => {
 const getRefreshTokenByToken = async (token) => {
   try {
     const refreshToken = await RefreshToken.findOne({ token });
-    if (refreshToken) {
+    if (refreshToken && refreshToken.revokedAt === null) {
       return refreshToken;
     }
-    return null;
   } catch (err) {
     throw err;
   }
+  return null;
 };
 
 const updateRefreshToken = async (oldToken, newToken) => {
@@ -56,7 +56,7 @@ const updateRefreshToken = async (oldToken, newToken) => {
       return true;
     }
   } catch (err) {
-    console.log(err);
+    throw err;
   }
   return false;
 };

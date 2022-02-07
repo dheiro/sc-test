@@ -70,7 +70,7 @@ const refreshToken = async (req, res) => {
       }
       return res.status(404).json({
         success: false,
-        message: 'token not in database',
+        message: 'token not in database or revoked',
       });
     } catch (err) {
       console.log(err);

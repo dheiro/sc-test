@@ -68,8 +68,23 @@ const checkIsAdmin = async (id) => {
   }
 };
 
+const verifyRefreshTokenValidityFromBody = (req, res, next) => {
+  const { token } = req.body;
+  try {
+    if (token && jwt.verify(token, process.env.REFRESH_TOKEN_KEY)) {
+      return next();
+    }
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: 'token not valid or expired',
+    });
+  }
+};
+
 module.exports = {
   authenticateAccessToken,
   isAdmin,
   onlyMe,
+  verifyRefreshTokenValidityFromBody,
 };

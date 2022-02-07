@@ -30,8 +30,7 @@ const authenticateAccessToken = (req, res, next) => {
 const isAdmin = async (req, res, next) => {
   const { user } = req;
   try {
-    const checkedUser = await User.findById(user.id);
-    if (checkedUser && checkedUser.role === 'admin') {
+    if (await checkIsAdmin(user.id)) {
       return next();
     }
     return res.status(403).json({
@@ -46,8 +45,11 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-const onlyMe = (req, res, next) => {
+const onlyMe = async (req, res, next) => {
   const { user } = req;
+  if (await checkIsAdmin(user.id)) {
+    return next();
+  }
   if (user.id === req.params.id) {
     return next();
   }
@@ -55,6 +57,15 @@ const onlyMe = (req, res, next) => {
     success: false,
     message: 'you only allowed access your data',
   });
+};
+
+const checkIsAdmin = async (id) => {
+  try {
+    const user = await User.findById(id);
+    return (user && user.role === 'admin');
+  } catch (err) {
+    throw err;
+  }
 };
 
 module.exports = {

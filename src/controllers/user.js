@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { isValidId } = require('../helpers/checker');
 
 const createUser = async (req, res) => {
   const { name, username, password, role } = req.body;
@@ -31,7 +31,7 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
   try {
-    if (mongoose.Types.ObjectId.isValid(id)) {
+    if (isValidId(id)) {
       const user = await User.findById(id);
       if (user) {
         return res.json(user);
@@ -48,7 +48,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, username, password, role } = req.body;
   try {
-    if (mongoose.Types.ObjectId.isValid(id)) {
+    if (isValidId(id)) {
       const user = await User.findById(id);
       if (user) {
         if (name) {
@@ -78,7 +78,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
-    if (mongoose.Types.ObjectId.isValid(id)) {
+    if (isValidId(id)) {
       const user = await User.findByIdAndDelete(id);
       if (user) {
         return res.sendStatus(204);

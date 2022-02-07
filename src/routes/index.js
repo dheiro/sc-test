@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const authRouter = require('./auth');
 const userRouter = require('./users');
-const { authenticateAccessToken } = require('../middleware');
+const { authenticateAccessToken } = require('../middleware/access-control');
 
 const routes = Router();
 

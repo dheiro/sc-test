@@ -28,3 +28,7 @@ The documentation and test can be access from http://BASE_URL/documentation
 ## Demo
 Admin: admin:admin123
 User: user:user123
+
+## Flow Diagram
+![](https://i.postimg.cc/gJVcxxYx/Untitled-Diagram-1.jpg)
+![](https://i.postimg.cc/sxKVJbGy/Untitled-Diagram-2.jpg)

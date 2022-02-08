@@ -26,6 +26,7 @@ The documentation and test can be access from http://BASE_URL/documentation
     ![](https://i.postimg.cc/c4LN0gYD/Screen-Shot-2022-02-08-at-18-38-37.png)
 
 ## Demo
+Access http://BASE_URL/api/init to create initial users (one time only)
 - Admin: admin:admin123
 - User: user:user123
 

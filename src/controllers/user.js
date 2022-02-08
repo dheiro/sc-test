@@ -11,7 +11,10 @@ const createUser = async (req, res) => {
       password: await bcrypt.hash(password, 10),
       role: role && ['admin', 'user'].includes(role) ? role : 'user',
     });
-    res.status(201).json(user);
+    res.status(201).json({
+      success: true,
+      data: user,
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -21,7 +24,10 @@ const createUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    res.json(users);
+    res.json({
+      success: true,
+      data: users,
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -34,10 +40,16 @@ const getUser = async (req, res) => {
     if (isValidId(id)) {
       const user = await User.findById(id);
       if (user) {
-        return res.json(user);
+        return res.json({
+          success: true,
+          data: user,
+        });
       }
     }
-    return res.sendStatus(404);
+    return res.status(404).json({
+      success: false,
+      message: 'user not found',
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -65,10 +77,16 @@ const updateUser = async (req, res) => {
         }
         user.save();
         delete user.password;
-        return res.json(user);
+        return res.json({
+          success: true,
+          data: user,
+        });
       }
     }
-    return res.sendStatus(404);
+    return res.status(404).json({
+      success: false,
+      message: 'user not found',
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -84,7 +102,10 @@ const deleteUser = async (req, res) => {
         return res.sendStatus(204);
       }
     }
-    return res.sendStatus(404);
+    return res.status(404).json({
+      success: false,
+      message: 'user not found',
+    });
   } catch (err) {
     console.log(err);
     req.sendStatus(500);

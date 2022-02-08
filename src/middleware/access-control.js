@@ -6,7 +6,7 @@ const authenticateAccessToken = (req, res, next) => {
     let token = req.get('Authorization');
     if (token) {
       token = token.split(' ')[1];
-      const decode = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+      const decode = jwt.verify(token, process.env.EXPRESS_ACCESS_TOKEN_KEY);
       req.user = {
         id: decode.id,
         name: decode.name,
@@ -71,7 +71,7 @@ const checkIsAdmin = async (id) => {
 const verifyRefreshTokenValidityFromBody = (req, res, next) => {
   const { token } = req.body;
   try {
-    if (token && jwt.verify(token, process.env.REFRESH_TOKEN_KEY)) {
+    if (token && jwt.verify(token, process.env.EXPRESS_REFRESH_TOKEN_KEY)) {
       return next();
     }
   } catch (err) {

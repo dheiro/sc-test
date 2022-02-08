@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app-deployment
+  labels:
+    app: express-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express-app
+  template:
+    metadata:
+      labels:
+        app: express-app
+    spec:
+      containers:
+      - name: express-app
+        image: dheiro/sc-test
+        ports:
+          - containerPort: 8000
+        env:
+          - name: EXPRESS_PORT
+            value: "8000"
+          - name: EXPRESS_MONGODB_URL
+            valueFrom:
+              configMapKeyRef:
+                name: mongodb-configmap
+                key: database_url 
+          - name: EXPRESS_MONGODB_USER
+            value: admin
+          - name: EXPRESS_MONGODB_PASSWORD
+            value: admin123
+          - name: EXPRESS_ACCESS_TOKEN_KEY
+            value: 857ab7937a40b38b23b10a2aa5ff5af9
+          - name: EXPRESS_REFRESH_TOKEN_KEY
+            value: 0b82d33e3a3786a4a4986718a19b7f79
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-app-service
+spec:
+  selector:
+    app: express-app
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+    nodePort: 30001

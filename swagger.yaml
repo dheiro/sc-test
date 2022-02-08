@@ -1,0 +1,562 @@
+openapi: 3.0.0
+info:
+  title: SejutaCita Technical Test - Rest API CRUD With Refresh Token
+  version: 1.0.0
+
+servers:
+  - url: /api
+    description: Main Server
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate user credentials and return user data, access token, and refresh token
+      tags:
+        - Authentication
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "admin123"
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: User details, a JWT access token and a refresh token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    example:
+                      user:
+                        _id: "6200bdeb8fd362b55023a073"
+                        name: "Administrator"
+                        username: "admin"
+                        role: "admin"
+                        createdAt: "2019-11-06T14:51:31.000Z"
+                        updatedAt: "2019-11-06T14:51:31.000Z"
+                      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDBiZGViOGZkMzYyYjU1MDIzYTA3MyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY0NDMwNzM0OCwiZXhwIjoxNjQ0MzA3NjQ4fQ.B8Pq2qy4xi7QZAWvDuPJI68kFe8h7B3GqTAkWC2mybk"
+                      refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDBiZGViOGZkMzYyYjU1MDIzYTA3MyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY0NDMwNzM0OCwiZXhwIjoxNjQ0MzA3NjQ4fQ.B8Pq2qy4xi7QZAWvDuPJI68kFe8h7B3GqTAkWC2mybk"
+        "401":
+          description: The password is incorrect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "wrong password"
+        "404":
+          description: The user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "user not found"
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token
+      tags:
+        - Authentication
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDBiZGViOGZkMzYyYjU1MDIzYTA3MyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIiwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY0NDMwNzM0OCwiZXhwIjoxNjQ0MzA3NjQ4fQ.B8Pq2qy4xi7QZAWvDuPJI68kFe8h7B3GqTAkWC2mybk"
+      responses:
+        "200":
+          description: User details, a JWT access token and a refresh token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    example:
+                      user:
+                        _id: "6200bdeb8fd362b55023a073"
+                        name: "Administrator"
+                        username: "admin"
+                        role: "admin"
+                        createdAt: "2019-11-06T14:51:31.000Z"
+                        updatedAt: "2019-11-06T14:51:31.000Z"
+                      accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDBiZGViOGZkMzYyYjU1MDIzYTA3"
+        "400":
+          description: The token is not present
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "token not provided in json body"
+        "401":
+          description: The token is not valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "token not valid or expired"
+        "404":
+          description: The token not in database or revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "token not in database or revoked"
+  /users:
+    get:
+      summary: Get a list of all users
+      description: Restricted to admin only.
+      operationId: getAllUsers
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          example: "6200bdeb8fd362b55023a073"
+                        name:
+                          type: string
+                          example: "Administrator"
+                        username:
+                          type: string
+                          example: "admin"
+                        role:
+                          type: string
+                          example: "admin"
+                        createdAt:
+                          type: string
+                          example: "2019-11-06T14:51:31.000Z"
+                        updatedAt:
+                          type: string
+                          example: "2019-11-06T14:51:31.000Z"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "admin only, you are not allowed"
+    post:
+      summary: Create a new user
+      description: Restricted to admin only.
+      operationId: createUser
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Administrator"
+                username:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "admin"
+                role:
+                  type: string
+                  example: "admin"
+      responses:
+        "201":
+          description: The user has been created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    example:
+                      _id: "6200bdeb8fd362b55023a073"
+                      name: "Administrator"
+                      username: "admin"
+                      role: "admin"
+                      createdAt: "2019-11-06T14:51:31.000Z"
+                      updatedAt: "2019-11-06T14:51:31.000Z"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "admin only, you are not allowed"
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: User id
+        required: true
+        example: "6200bdeb8fd362b55023a073"
+        schema:
+          type: string
+    get:
+      summary: Get a single user by id
+      description: Admin users can access any user record, regular users are restricted to their own user record.
+      operationId: getUserById
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Details of the specified user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6200bdeb8fd362b55023a073"
+                      name:
+                        type: string
+                        example: "Administrator"
+                      username:
+                        type: string
+                        example: "admin"
+                      role:
+                        type: string
+                        example: "admin"
+                      createdAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+                      updatedAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "user not found"
+    put:
+      summary: Update a user
+      description: Admin users can update any user record.
+      operationId: updateUser
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Administrator"
+                username:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "password"
+                role:
+                  type: string
+                  example: "admin"
+      responses:
+        "200":
+          description: User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6200bdeb8fd362b55023a073"
+                      name:
+                        type: string
+                        example: "Administrator"
+                      username:
+                        type: string
+                        example: "admin"
+                      role:
+                        type: string
+                        example: "admin"
+                      createdAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+                      updatedAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "admin only, you are not allowed"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "user not found"
+
+    delete:
+      summary: Delete a user
+      description: Admin users can delete any user record.
+      operationId: deleteUser
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6200bdeb8fd362b55023a073"
+                      name:
+                        type: string
+                        example: "Administrator"
+                      username:
+                        type: string
+                        example: "admin"
+                      role:
+                        type: string
+                        example: "admin"
+                      createdAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+                      updatedAt:
+                        type: string
+                        example: "2019-11-06T14:51:31.000Z"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "user not found"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "admin only, you are not allowed"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  

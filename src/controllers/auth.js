@@ -17,8 +17,8 @@ const login = async (req, res) => {
           username: user.username,
           role: user.role,
         };
-        const accessToken = generateToken(payload, process.env.ACCESS_TOKEN_KEY, '5m');
-        const refreshToken = generateToken(payload, process.env.REFRESH_TOKEN_KEY, '20m');
+        const accessToken = generateToken(payload, process.env.EXPRESS_ACCESS_TOKEN_KEY, '5m');
+        const refreshToken = generateToken(payload, process.env.EXPRESS_REFRESH_TOKEN_KEY, '20m');
         await saveRefreshToken(user._id, refreshToken);
         return res.json({
           success: true,
@@ -34,7 +34,10 @@ const login = async (req, res) => {
         message: 'wrong password',
       })
     }
-    return res.sendStatus(404);
+    return res.status(404).json({
+      success: false,
+      message: 'user not found',
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -55,8 +58,8 @@ const refreshToken = async (req, res) => {
             username: user.username,
             role: user.role,
           };
-          const accessToken = generateToken(payload, process.env.ACCESS_TOKEN_KEY, '5m');
-          const refreshToken = generateToken(payload, process.env.REFRESH_TOKEN_KEY, '20m');
+          const accessToken = generateToken(payload, process.env.EXPRESS_ACCESS_TOKEN_KEY, '5m');
+          const refreshToken = generateToken(payload, process.env.EXPRESS_REFRESH_TOKEN_KEY, '20m');
           await updateRefreshToken(token, refreshToken);
           return res.json({
             success: true,
